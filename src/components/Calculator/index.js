@@ -36,9 +36,9 @@ export default function Calculator() {
       <RowGroup>
         <ColumnGroup>
           <RowGroup>
+            <Button name="CE" />
             <Button name="C" />
             <Button name="+/-" />
-            <Button name="/" />
           </RowGroup>
           <RowGroup>
             <Button name="7" />
@@ -61,10 +61,11 @@ export default function Calculator() {
           </RowGroup>
         </ColumnGroup>
         <ColumnGroup>
+          <Button name="/" />
           <Button name="*" />
           <Button name="-" />
           <Button name="+" />
-          <Button name="=" doubleHigh />
+          <Button name="=" />
         </ColumnGroup>
       </RowGroup>
     </div>
