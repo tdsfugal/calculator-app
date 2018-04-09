@@ -2,7 +2,7 @@ import React from 'react';
 
 import styled, { css } from 'react-emotion';
 
-const DisplayStyle = css`
+const displayClass = css`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -23,7 +23,7 @@ const Result = styled('span')`
 
 export default function Display(props) {
   return (
-    <div className={DisplayStyle}>
+    <div className={displayClass}>
       <Result>{props.value}</Result>
     </div>
   );

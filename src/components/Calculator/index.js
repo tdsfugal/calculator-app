@@ -4,7 +4,7 @@ import styled, { css } from 'react-emotion';
 import Display from '../Display';
 import Button from '../Button';
 
-const calculatorStyles = css`
+const calculatorClass = css`
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -31,44 +31,40 @@ const RowGroup = styled('div')`
 
 export default function Calculator() {
   return (
-    <div className={calculatorStyles}>
+    <div className={calculatorClass}>
       <Display value={100.0} />
       <RowGroup>
         <ColumnGroup>
           <RowGroup>
-            <Button onClick={() => console.log('Clicked C')}>C</Button>
-            <Button onClick={() => console.log('Clicked +/-')}>+/-</Button>
-            <Button onClick={() => console.log('Clicked /')}>/</Button>
+            <Button name="C" />
+            <Button name="+/-" />
+            <Button name="/" />
           </RowGroup>
           <RowGroup>
-            <Button onClick={() => console.log('Clicked 7')}>7</Button>
-            <Button onClick={() => console.log('Clicked 8')}>8</Button>
-            <Button onClick={() => console.log('Clicked 9')}>9</Button>
+            <Button name="7" />
+            <Button name="8" />
+            <Button name="9" />
           </RowGroup>
           <RowGroup>
-            <Button onClick={() => console.log('Clicked 4')}>4</Button>
-            <Button onClick={() => console.log('Clicked 5')}>5</Button>
-            <Button onClick={() => console.log('Clicked 6')}>6</Button>
+            <Button name="4" />
+            <Button name="5" />
+            <Button name="6" />
           </RowGroup>
           <RowGroup>
-            <Button onClick={() => console.log('Clicked 1')}>1</Button>
-            <Button onClick={() => console.log('Clicked 2')}>2</Button>
-            <Button onClick={() => console.log('Clicked 3')}>3</Button>
+            <Button name="1" />
+            <Button name="2" />
+            <Button name="3" />
           </RowGroup>
           <RowGroup>
-            <Button doubleWide onClick={() => console.log('Clicked 0')}>
-              0
-            </Button>
-            <Button onClick={() => console.log('Clicked .')}>.</Button>
+            <Button name="0" doubleWide />
+            <Button name="." />
           </RowGroup>
         </ColumnGroup>
         <ColumnGroup>
-          <Button onClick={() => console.log('Clicked *')}>*</Button>
-          <Button onClick={() => console.log('Clicked -')}>-</Button>
-          <Button onClick={() => console.log('Clicked +')}>+</Button>
-          <Button doubleHigh onClick={() => console.log('Clicked =')}>
-            =
-          </Button>
+          <Button name="*" />
+          <Button name="-" />
+          <Button name="+" />
+          <Button name="=" doubleHigh />
         </ColumnGroup>
       </RowGroup>
     </div>
