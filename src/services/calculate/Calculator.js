@@ -53,13 +53,13 @@ export default class Calculator {
     this.bufferString = '';
     this.buffer = 0;
     this.bufferNegative = false;
-    this.reportChange()
+    this.reportChange();
   }
 
   clearAll() {
     this.accumulator = 0;
     this.operator = NONE;
-      this.clearBuffer();
+    this.clearBuffer();
   }
 
   setOperator(operator) {
