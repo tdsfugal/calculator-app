@@ -1,3 +1,5 @@
+import getApolloClient from '../../graphql/getApolloClient';
+
 import Calculator, { ADD, SUBTRACT, MULTIPLY, DIVIDE } from './Calculator';
 
 const calculator = new Calculator();
