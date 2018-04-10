@@ -1,8 +1,8 @@
 import React from 'react';
 import styled, { css } from 'react-emotion';
 
-import Display from '../Display';
-import Button from '../Button';
+import Display from './Display';
+import Button from './Button';
 
 const calculatorClass = css`
   display: flex;
@@ -29,43 +29,50 @@ const RowGroup = styled('div')`
   label: row-group;
 `;
 
+let nextId = 0;
+
 export default function Calculator() {
+  // generate a unique id for this computation
+  const id = `calc_${nextId}`;
+  nextId += 1;
+
+  // the sub-components interact with the computation querying on its cached state via id
   return (
     <div className={calculatorClass}>
-      <Display value={100.0} />
+      <Display id={id} />
       <RowGroup>
         <ColumnGroup>
           <RowGroup>
-            <Button name="CE" />
-            <Button name="C" />
-            <Button name="+/-" />
+            <Button id={id} name="CE" />
+            <Button id={id} name="C" />
+            <Button id={id} name="+/-" />
           </RowGroup>
           <RowGroup>
-            <Button name="7" />
-            <Button name="8" />
-            <Button name="9" />
+            <Button id={id} name="7" />
+            <Button id={id} name="8" />
+            <Button id={id} name="9" />
           </RowGroup>
           <RowGroup>
-            <Button name="4" />
-            <Button name="5" />
-            <Button name="6" />
+            <Button id={id} name="4" />
+            <Button id={id} name="5" />
+            <Button id={id} name="6" />
           </RowGroup>
           <RowGroup>
-            <Button name="1" />
-            <Button name="2" />
-            <Button name="3" />
+            <Button id={id} name="1" />
+            <Button id={id} name="2" />
+            <Button id={id} name="3" />
           </RowGroup>
           <RowGroup>
-            <Button name="0" doubleWide />
-            <Button name="." />
+            <Button id={id} name="0" doubleWide />
+            <Button id={id} name="." />
           </RowGroup>
         </ColumnGroup>
         <ColumnGroup>
-          <Button name="/" />
-          <Button name="*" />
-          <Button name="-" />
-          <Button name="+" />
-          <Button name="=" />
+          <Button id={id} name="/" />
+          <Button id={id} name="*" />
+          <Button id={id} name="-" />
+          <Button id={id} name="+" />
+          <Button id={id} name="=" />
         </ColumnGroup>
       </RowGroup>
     </div>
