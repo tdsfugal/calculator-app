@@ -2,6 +2,10 @@ import getApolloClient from '../../graphql/getApolloClient';
 
 import Calculator, { ADD, SUBTRACT, MULTIPLY, DIVIDE } from './Calculator';
 
+const client = getApolloClient();
+
+console.log(client);
+
 const calculator = new Calculator();
 
 // The react buttons push events to the calculator via callbacks created in this factory

@@ -1,4 +1,6 @@
 import React from 'react';
+import { Query } from 'react-apollo';
+import gql from 'graphql-tag';
 
 import styled, { css } from 'react-emotion';
 
@@ -21,10 +23,27 @@ const Result = styled('span')`
   font-size: 30px;
 `;
 
-export default function Display(props) {
+const query = gql`
+  query getComputation($id: String!) @client {
+    computation(id: $id) {
+      id
+      buffer {
+        text
+      }
+    }
+  }
+`;
+
+export default function Display() {
   return (
-    <div className={displayClass}>
-      <Result>{props.value}</Result>
-    </div>
+    <Query query={query}>
+      {({ loading, error, data }) => (
+        <div className={displayClass}>
+          <Result>
+            {!loading && !error && data ? data.computation.buffer.text : '0'}
+          </Result>
+        </div>
+      )}
+    </Query>
   );
 }
