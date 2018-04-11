@@ -10,9 +10,9 @@ const getPending = gql`
   query getPending {
     computations @client {
       id
-      event {
+      event(pending: true) {
         key
-        processed
+        pending
       }
     }
   }
@@ -23,18 +23,19 @@ const observable = client.watchQuery({
   pollInterval: 500
 });
 
-const handle = setInterval(() => {
-  console.log('ping');
-  observable
-    .result()
-    .then(result => {
-      console.log(result);
-    })
-    .catch(err => {
-      console.log(err);
-      clearInterval(handle);
-    });
-}, 5000);
+const subscription = observable.subscribe({
+  next: ({ data }) => {
+    const events =
+      data && data.computations && data.computations.length
+        ? data.computations.filter(c => c && c.event && c.event.pending)
+        : [];
+    console.log(events);
+  },
+  error: err => {
+    console.log(err);
+  },
+  complete: () => console.log('Subscription Complete')
+});
 
 const calculator = new Calculator();
 
