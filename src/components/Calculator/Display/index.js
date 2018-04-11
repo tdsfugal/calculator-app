@@ -29,7 +29,7 @@ const GET_BUFFER_STRING = gql`
     computations {
       id
       state {
-        bufferString
+        displayString
       }
     }
   }
@@ -47,7 +47,7 @@ const Display = ({ id }) => (
           : [];
       const result = computations
         .filter(comp => comp && comp.id === id)
-        .map(comp => comp.state && comp.state.bufferString);
+        .map(comp => comp.state && comp.state.displayString);
       return (
         <div className={displayClass}>
           <Result>{result[0] || '0'}</Result>

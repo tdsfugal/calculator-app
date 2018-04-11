@@ -19,19 +19,18 @@ export default function Calculator() {
         const { computations = [] } = client.readQuery({
           query: getComputations
         });
+        console.log(`>>>> Read ${id}`);
         const compIds = computations.map(c => c.id);
         if (!compIds.includes(id)) {
           computations.push({
             id,
+            eventKey: '',
+            eventPending: false,
             state: Object.assign({}, DEFAULT_COMPUTATION_STATE),
-            event: {
-              key: '',
-              pending: false,
-              __typename: 'ComputationEvent'
-            },
             __typename: 'Computation'
           });
           const data = { computations };
+          console.log(`+++++++ INITIALIZING ${id} ++++++++`);
           client.writeQuery({ query: getComputations, data });
         }
         return <CalculatorFace id={id} />;

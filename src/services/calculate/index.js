@@ -10,7 +10,7 @@ export const MULTIPLY = 'multiply';
 export const DIVIDE = 'divide';
 
 export const DEFAULT_COMPUTATION_STATE = {
-  bufferString: '',
+  displayString: '',
   bufferNegative: false,
   buffer: 0,
   accumulator: 0,
@@ -26,14 +26,14 @@ const observable = client.watchQuery({
 });
 
 const subscription = observable.subscribe({
-  next: ({ data: { computations = [] } }) => {
+  next: event2 => {
     console.log('----Start----');
-    console.log(computations);
+    console.log(client);
+    console.log(client.cache.data.data.ROOT_QUERY);
+    const computations = event2.data.computations;
     const pendingComputations = computations.length
       ? computations.filter(c => c && c.event && c.event.pending)
       : [];
-    console.log('pending');
-    console.log(pendingComputations);
     console.log('--------');
     pendingComputations.forEach(
       ({ id, event, state = DEFAULT_COMPUTATION_STATE }) => {

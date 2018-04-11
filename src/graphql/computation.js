@@ -7,22 +7,18 @@ export const defaults = {
 export const typeDefs = `
 
   type ComputationState {
-    bufferString: String
+    displayString: String
     bufferNegative: Boolean
     buffer: Number
     accumulator: Number
     operator: String
   }
 
-  type ComputationEvent {
-    key: String
-    pending: Boolean
-  }
-
   type Computation {
     id: String!
+    eventKey: String
+    eventPending: String
     state: ComputationState
-    event: ComputationEvent
   }
 
   type Query {
@@ -36,17 +32,14 @@ export const getComputations = gql`
   query getComputations {
     computations @client {
       id
+      eventKey
+      eventPending
       state {
-        bufferString
+        displayString
         bufferNegative
         buffer
         accumulator
         operator
-        __typename
-      }
-      event {
-        key
-        pending
         __typename
       }
       __typename
@@ -57,24 +50,20 @@ export const getComputations = gql`
 export const stateFragment = gql`
   fragment stateFragment on Computation @client {
     state {
-      bufferString
+      displayString
       bufferNegative
       buffer
       accumulator
       operator
       __typename
     }
-    __typename
   }
 `;
 
 export const eventFragment = gql`
   fragment eventFragment on Computation @client {
-    event {
-      key
-      pending
-      __typename
-    }
+    eventKey
+    eventPending
     __typename
   }
 `;
@@ -90,6 +79,7 @@ export const resolvers = {
         },
         __typename: 'Computation'
       };
+      console.log(`$$$$$$ UPDATING STATE for ${id} $$$$$$$$$`);
       cache.writeFragment({ id, fragment: stateFragment, data });
       return null;
     },
@@ -97,13 +87,13 @@ export const resolvers = {
     registerKeyEvent: (_, variables, { cache, getCacheKey }) => {
       const id = getCacheKey({ __typename: 'Computation', id: variables.id });
       const data = {
-        event: {
-          key: variables.key,
-          pending: true,
-          __typename: 'ComputationEvent'
-        },
+        eventKey: variables.key,
+        eventPending: true,
         __typename: 'Computation'
       };
+      console.log(
+        `!!!!!!!! REGISTERING KEY EVENT :${variables.key}: for ${id} !!!!!!!!!!`
+      );
       cache.writeFragment({ id, fragment: eventFragment, data });
       return null;
     },
@@ -111,13 +101,11 @@ export const resolvers = {
     clearKeyEvent: (_, variables, { cache, getCacheKey }) => {
       const id = getCacheKey({ __typename: 'Computation', id: variables.id });
       const data = {
-        event: {
-          key: null,
-          pending: false,
-          __typename: 'ComputationEvent'
-        },
+        eventKey: '',
+        eventPending: false,
         __typename: 'Computation'
       };
+      console.log(`^^^^^^^^^^ CLEARING KEY EVENT for ${id} ^^^^^^^^^^^^`);
       cache.writeFragment({ id, fragment: eventFragment, data });
       return null;
     }

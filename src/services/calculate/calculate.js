@@ -9,20 +9,20 @@ import {
 const operators = [ADD, SUBTRACT, MULTIPLY, DIVIDE];
 
 const updateBuffer = (input = null, state) => {
-  const isFloat = state.bufferString.indexOf('.') !== -1;
+  const isFloat = state.displayString.indexOf('.') !== -1;
   if (input === '.' && isFloat) return state; // No second decimal point
 
-  const bufferString = input
-    ? state.bufferString.concat(input)
-    : state.bufferString;
+  const displayString = input
+    ? state.displayString.concat(input)
+    : state.displayString;
 
   const newNumber = isFloat
-    ? parseFloat(bufferString)
-    : parseInt(bufferString, 10);
+    ? parseFloat(displayString)
+    : parseInt(displayString, 10);
 
   return Object.assign({}, ...state, {
     buffer: state.bufferNegative ? newNumber * -1 : newNumber,
-    bufferString
+    displayString
   });
 };
 
@@ -33,7 +33,7 @@ const toggleSign = state =>
 
 const clearBuffer = state =>
   Object.assign({}, ...state, {
-    bufferString: '',
+    displayString: '',
     buffer: 0,
     bufferNegative: false
   });
@@ -51,7 +51,7 @@ const setOperator = (operator, state) =>
 const setBuffer = (number, state) =>
   Object.assign({}, ...state, {
     buffer: number,
-    bufferString: number.toString()
+    displayString: number.toString()
   });
 
 const compute = state => {
