@@ -1,32 +1,31 @@
 import React from 'react';
+import { ApolloConsumer } from 'react-apollo';
 import { bool, string } from 'prop-types';
-import { css } from 'react-emotion';
+import ButtonElement from './ButtonElement';
 
-export default function Button({ id, name, doubleHigh, doubleWide }) {
-  const height = doubleHigh ? '125px' : '45px';
-  const width = doubleWide ? '150px' : '60px';
-
-  const buttonClass = css`
-    background-color: #000;
-    color: white;
-    height: ${height};
-    width: ${width};
-    margin: 15px;
-    text-align: center;
-    border-radius: 5px;
-    font-size: 25px;
-    line-height: ${height};
-    label: button;
-  `;
-
-  const onClick = () => {
-    console.log(`clicked this ${name} for computation = ${id}`);
-  };
-
+export default function Button({ id, name, ...props }) {
   return (
-    <button className={buttonClass} onClick={onClick}>
-      {name}
-    </button>
+    <ApolloConsumer>
+      {client => {
+        const onClick = () => {
+          client.writeData({
+            data: {
+              computation: {
+                id,
+                event: {
+                  key: name,
+                  processed: false,
+                  __typename: 'ComputationEvent'
+                },
+                __typename: 'Computation'
+              }
+            }
+          });
+          console.log(client.cache);
+        };
+        return <ButtonElement onClick={onClick} name={name} {...props} />;
+      }}
+    </ApolloConsumer>
   );
 }
 
