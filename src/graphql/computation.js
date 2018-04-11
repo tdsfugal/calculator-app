@@ -32,8 +32,30 @@ export const typeDefs = `
 
 `;
 
-const stateFragment = gql`
-  fragment stateFragment on Calculation @client {
+export const getComputations = gql`
+  query getComputations {
+    computations @client {
+      id
+      state {
+        bufferString
+        bufferNegative
+        buffer
+        accumulator
+        operator
+        __typename
+      }
+      event {
+        key
+        pending
+        __typename
+      }
+      __typename
+    }
+  }
+`;
+
+export const stateFragment = gql`
+  fragment stateFragment on Computation @client {
     state {
       bufferString
       bufferNegative
@@ -46,8 +68,8 @@ const stateFragment = gql`
   }
 `;
 
-const eventFragment = gql`
-  fragment eventFragment on Calculation @client {
+export const eventFragment = gql`
+  fragment eventFragment on Computation @client {
     event {
       key
       pending

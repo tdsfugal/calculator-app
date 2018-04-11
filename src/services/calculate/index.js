@@ -1,6 +1,5 @@
-import gql from 'graphql-tag';
-
 import getApolloClient from '../../graphql/getApolloClient';
+import { getComputations } from '../../graphql/computation';
 
 import calculate from './calculate';
 
@@ -15,32 +14,11 @@ export const DEFAULT_COMPUTATION_STATE = {
   bufferNegative: false,
   buffer: 0,
   accumulator: 0,
-  operator: NONE
+  operator: NONE,
+  __typename: 'ComputationState'
 };
 
 const client = getApolloClient();
-
-const getComputations = gql`
-  query getComputations {
-    computations @client {
-      id
-      state {
-        bufferString
-        bufferNegative
-        buffer
-        accumulator
-        operator
-        __typename
-      }
-      event {
-        key
-        pending
-        __typename
-      }
-      __typename
-    }
-  }
-`;
 
 const observable = client.watchQuery({
   query: getComputations,
@@ -49,10 +27,14 @@ const observable = client.watchQuery({
 
 const subscription = observable.subscribe({
   next: ({ data: { computations = [] } }) => {
+    console.log('----Start----');
+    console.log(computations);
     const pendingComputations = computations.length
       ? computations.filter(c => c && c.event && c.event.pending)
       : [];
-
+    console.log('pending');
+    console.log(pendingComputations);
+    console.log('--------');
     pendingComputations.forEach(
       ({ id, event, state = DEFAULT_COMPUTATION_STATE }) => {
         console.log(`====== ${id} Pending =======`);
