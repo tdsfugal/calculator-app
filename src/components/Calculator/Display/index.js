@@ -24,28 +24,33 @@ const Result = styled('span')`
   font-size: 30px;
 `;
 
-const GET_BUFFERS = gql`
-  query getBuffers @client {
+const GET_BUFFER_STRING = gql`
+  query getBufferString @client {
     computations {
       id
-      buffer {
-        text
+      state {
+        bufferString
       }
     }
   }
 `;
 
 const Display = ({ id }) => (
-  <Query query={GET_BUFFERS}>
+  <Query query={GET_BUFFER_STRING}>
     {({ loading, error, data }) => {
-      console.log(data);
-      const computations = !loading && !error && data && data.computations;
+      // The filtering step should not be neccesary. There seems to be a bug in how
+      // queries with arguments work in local cache. Not sure if it is a setup issue
+      // or something deeper.
+      const computations =
+        !loading && !error && data && data.computations
+          ? data.computations
+          : [];
       const result = computations
         .filter(comp => comp && comp.id === id)
-        .map(comp => comp.buffer && comp.buffer.text);
+        .map(comp => comp.state && comp.state.bufferString);
       return (
         <div className={displayClass}>
-          <Result>{result || '0'}</Result>
+          <Result>{result[0] || '0'}</Result>
         </div>
       );
     }}

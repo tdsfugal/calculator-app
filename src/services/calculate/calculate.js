@@ -1,112 +1,118 @@
-import { ADD, SUBTRACT, MULTIPLY, DIVIDE, DEFAULT_COMPUTATION } from './index';
+import {
+  ADD,
+  SUBTRACT,
+  MULTIPLY,
+  DIVIDE,
+  DEFAULT_COMPUTATION_STATE
+} from './index';
 
 const operators = [ADD, SUBTRACT, MULTIPLY, DIVIDE];
 
-const updateBuffer = (input = null, comp) => {
-  const isFloat = comp.bufferString.indexOf('.') !== -1;
-  if (input === '.' && isFloat) return comp; // No second decimal point
+const updateBuffer = (input = null, state) => {
+  const isFloat = state.bufferString.indexOf('.') !== -1;
+  if (input === '.' && isFloat) return state; // No second decimal point
 
   const bufferString = input
-    ? comp.bufferString.concat(input)
-    : comp.bufferString;
+    ? state.bufferString.concat(input)
+    : state.bufferString;
 
   const newNumber = isFloat
     ? parseFloat(bufferString)
     : parseInt(bufferString, 10);
 
-  return Object.assign({}, ...comp, {
-    buffer: comp.bufferNegative ? newNumber * -1 : newNumber,
+  return Object.assign({}, ...state, {
+    buffer: state.bufferNegative ? newNumber * -1 : newNumber,
     bufferString
   });
 };
 
-const toggleSign = comp =>
-  Object.assign({}, ...comp, {
-    bufferNegative: !comp.bufferNegative
+const toggleSign = state =>
+  Object.assign({}, ...state, {
+    bufferNegative: !state.bufferNegative
   }).updateBuffer();
 
-const clearBuffer = comp =>
-  Object.assign({}, ...comp, {
+const clearBuffer = state =>
+  Object.assign({}, ...state, {
     bufferString: '',
     buffer: 0,
     bufferNegative: false
   });
 
-const clearAll = () => Object.assign({}, ...DEFAULT_COMPUTATION);
+const clearAll = () => Object.assign({}, ...DEFAULT_COMPUTATION_STATE);
 
-const setOperator = (operator, comp) =>
+const setOperator = (operator, state) =>
   operators.includes(operator)
-    ? Object.assign({}, ...comp, {
+    ? Object.assign({}, ...state, {
         operator,
-        accumulator: comp.buffer
+        accumulator: state.buffer
       }).clearBuffer()
-    : comp;
+    : state;
 
-const setBuffer = (number, comp) =>
-  Object.assign({}, ...comp, {
+const setBuffer = (number, state) =>
+  Object.assign({}, ...state, {
     buffer: number,
     bufferString: number.toString()
   });
 
-const compute = comp => {
-  switch (comp.operator) {
+const compute = state => {
+  switch (state.operator) {
     case ADD:
-      return setBuffer(comp.accumulator + comp.buffer);
+      return setBuffer(state.accumulator + state.buffer);
     case SUBTRACT:
-      return setBuffer(comp.accumulator - comp.buffer);
+      return setBuffer(state.accumulator - state.buffer);
     case MULTIPLY:
-      return setBuffer(comp.accumulator * comp.buffer);
+      return setBuffer(state.accumulator * state.buffer);
     case DIVIDE:
-      return comp.buffer === 0
-        ? comp // Silent return may not be the desired response to divide by zero
-        : setBuffer(comp.accumulator / comp.buffer);
+      return state.buffer === 0
+        ? state // Silent return may not be the desired response to divide by zero
+        : setBuffer(state.accumulator / state.buffer);
     default:
-      return comp;
+      return state;
   }
 };
 
 // This is a stateless four function calculator
-export default function calculate(key, computation) {
+export default function calculate(key, state) {
   switch (key) {
     case 'C':
-      return clearBuffer(computation);
+      return clearBuffer(state);
     case 'CE':
       return clearAll();
     case '0':
-      return updateBuffer('0', computation);
+      return updateBuffer('0', state);
     case '1':
-      return updateBuffer('1', computation);
+      return updateBuffer('1', state);
     case '2':
-      return updateBuffer('2', computation);
+      return updateBuffer('2', state);
     case '3':
-      return updateBuffer('3', computation);
+      return updateBuffer('3', state);
     case '4':
-      return updateBuffer('4', computation);
+      return updateBuffer('4', state);
     case '5':
-      return updateBuffer('5', computation);
+      return updateBuffer('5', state);
     case '6':
-      return updateBuffer('6', computation);
+      return updateBuffer('6', state);
     case '7':
-      return updateBuffer('7', computation);
+      return updateBuffer('7', state);
     case '8':
-      return updateBuffer('8', computation);
+      return updateBuffer('8', state);
     case '9':
-      return updateBuffer('9', computation);
+      return updateBuffer('9', state);
     case '.':
-      return updateBuffer('.', computation);
+      return updateBuffer('.', state);
     case '+/-':
-      return toggleSign(computation);
+      return toggleSign(state);
     case '+':
-      return setOperator(ADD, computation);
+      return setOperator(ADD, state);
     case '-':
-      return setOperator(SUBTRACT, computation);
+      return setOperator(SUBTRACT, state);
     case '*':
-      return setOperator(MULTIPLY, computation);
+      return setOperator(MULTIPLY, state);
     case '/':
-      return setOperator(DIVIDE, computation);
+      return setOperator(DIVIDE, state);
     case '=':
-      return compute(computation);
+      return compute(state);
     default:
-      return computation;
+      return state;
   }
 }

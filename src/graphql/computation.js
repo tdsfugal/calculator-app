@@ -1,40 +1,17 @@
 import gql from 'graphql-tag';
 
 export const defaults = {
-  computations: [
-    {
-      id: 'calc_0',
-      buffer: {
-        text: '2345.9',
-        __typename: 'ComputationBuffer'
-      },
-      event: {
-        key: '7',
-        pending: false,
-        __typename: 'ComputationEvent'
-      },
-      __typename: 'Computation'
-    },
-    {
-      id: 'calc_1',
-      buffer: {
-        text: '-573.92',
-        __typename: 'ComputationBuffer'
-      },
-      event: {
-        key: '0',
-        pending: true,
-        __typename: 'ComputationEvent'
-      },
-      __typename: 'Computation'
-    }
-  ]
+  computations: []
 };
 
 export const typeDefs = `
 
-  type ComputationBuffer {
-    text: String
+  type ComputationState {
+    bufferString: String
+    bufferNegative: Boolean
+    buffer: Number
+    accumulator: Number
+    operator: String
   }
 
   type ComputationEvent {
@@ -44,7 +21,7 @@ export const typeDefs = `
 
   type Computation {
     id: String!
-    buffer: ComputationBuffer
+    state: ComputationState
     event: ComputationEvent
   }
 
@@ -55,11 +32,17 @@ export const typeDefs = `
 
 `;
 
-const bufferFragment = gql`
-  fragment bufferFragment on Calculation @client {
-    buffer {
-      text
+const stateFragment = gql`
+  fragment stateFragment on Calculation @client {
+    state {
+      bufferString
+      bufferNegative
+      buffer
+      accumulator
+      operator
+      __typename
     }
+    __typename
   }
 `;
 
@@ -68,22 +51,24 @@ const eventFragment = gql`
     event {
       key
       pending
+      __typename
     }
+    __typename
   }
 `;
 
 export const resolvers = {
   Mutation: {
-    updateBuffer: (_, variables, { cache, getCacheKey }) => {
+    updateState: (_, variables, { cache, getCacheKey }) => {
       const id = getCacheKey({ __typename: 'Computation', id: variables.id });
       const data = {
-        buffer: {
-          text: variables.text,
-          __typename: 'ComputationBuffer'
+        state: {
+          ...variables.state,
+          __typename: 'ComputationState'
         },
         __typename: 'Computation'
       };
-      cache.writeFragment({ id, fragment: bufferFragment, data });
+      cache.writeFragment({ id, fragment: stateFragment, data });
       return null;
     },
 

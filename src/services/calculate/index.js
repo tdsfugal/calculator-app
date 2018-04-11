@@ -10,7 +10,7 @@ export const SUBTRACT = 'subtract';
 export const MULTIPLY = 'multiply';
 export const DIVIDE = 'divide';
 
-export const DEFAULT_COMPUTATION = {
+export const DEFAULT_COMPUTATION_STATE = {
   bufferString: '',
   bufferNegative: false,
   buffer: 0,
@@ -20,33 +20,53 @@ export const DEFAULT_COMPUTATION = {
 
 const client = getApolloClient();
 
-const getPending = gql`
-  query getPending {
+const getComputations = gql`
+  query getComputations {
     computations @client {
       id
-      event(pending: true) {
+      state {
+        bufferString
+        bufferNegative
+        buffer
+        accumulator
+        operator
+        __typename
+      }
+      event {
         key
         pending
+        __typename
       }
+      __typename
     }
   }
 `;
 
 const observable = client.watchQuery({
-  query: getPending,
+  query: getComputations,
   pollInterval: 500
 });
 
 const subscription = observable.subscribe({
-  next: ({ data }) => {
-    const pendingComputations =
-      data && data.computations && data.computations.length
-        ? data.computations.filter(c => c && c.event && c.event.pending)
-        : [];
-    console.log(pendingComputations);
+  next: ({ data: { computations = [] } }) => {
+    const pendingComputations = computations.length
+      ? computations.filter(c => c && c.event && c.event.pending)
+      : [];
+
+    pendingComputations.forEach(
+      ({ id, event, state = DEFAULT_COMPUTATION_STATE }) => {
+        console.log(`====== ${id} Pending =======`);
+        console.log(event);
+        console.log(state);
+        const newState = calculate(event.key, state);
+        console.log(newState);
+      }
+    );
   },
   error: err => {
     console.log(err);
   },
   complete: () => console.log('Subscription Complete')
 });
+
+export default subscription;
