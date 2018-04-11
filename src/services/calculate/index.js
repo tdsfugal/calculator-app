@@ -1,10 +1,40 @@
+import gql from 'graphql-tag';
+
 import getApolloClient from '../../graphql/getApolloClient';
 
 import Calculator, { ADD, SUBTRACT, MULTIPLY, DIVIDE } from './Calculator';
 
 const client = getApolloClient();
 
-console.log(client);
+const getPending = gql`
+  query getPending {
+    computations @client {
+      id
+      event {
+        key
+        processed
+      }
+    }
+  }
+`;
+
+const observable = client.watchQuery({
+  query: getPending,
+  pollInterval: 500
+});
+
+const handle = setInterval(() => {
+  console.log('ping');
+  observable
+    .result()
+    .then(result => {
+      console.log(result);
+    })
+    .catch(err => {
+      console.log(err);
+      clearInterval(handle);
+    });
+}, 5000);
 
 const calculator = new Calculator();
 

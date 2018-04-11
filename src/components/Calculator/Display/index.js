@@ -1,4 +1,5 @@
 import React from 'react';
+import { string } from 'prop-types';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 
@@ -23,9 +24,9 @@ const Result = styled('span')`
   font-size: 30px;
 `;
 
-const query = gql`
-  query getComputation($id: String!) @client {
-    computation(id: $id) {
+const GET_BUFFERS = gql`
+  query getBuffers @client {
+    computations {
       id
       buffer {
         text
@@ -34,16 +35,25 @@ const query = gql`
   }
 `;
 
-export default function Display() {
-  return (
-    <Query query={query}>
-      {({ loading, error, data }) => (
+const Display = ({ id }) => (
+  <Query query={GET_BUFFERS}>
+    {({ loading, error, data }) => {
+      console.log(data);
+      const computations = !loading && !error && data && data.computations;
+      const result = computations
+        .filter(comp => comp && comp.id === id)
+        .map(comp => comp.buffer && comp.buffer.text);
+      return (
         <div className={displayClass}>
-          <Result>
-            {!loading && !error && data ? data.computation.buffer.text : '0'}
-          </Result>
+          <Result>{result || '0'}</Result>
         </div>
-      )}
-    </Query>
-  );
-}
+      );
+    }}
+  </Query>
+);
+
+Display.propTypes = {
+  id: string.isRequired
+};
+
+export default Display;

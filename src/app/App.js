@@ -1,5 +1,5 @@
 import React from 'react';
-import { css } from 'react-emotion';
+import styled, { css } from 'react-emotion';
 import { injectGlobal } from 'emotion';
 
 import Header from '../components/Header';
@@ -23,11 +23,22 @@ const appClass = css`
   label: app;
 `;
 
+const CalculatorHolder = styled('div')`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  label: calculator-holder;
+`;
+
 export default function App() {
   return (
     <div className={appClass}>
       <Header>Four Function Calculator</Header>
-      <Calculator />
+      <CalculatorHolder>
+        <Calculator />
+        <Calculator />
+      </CalculatorHolder>
     </div>
   );
 }

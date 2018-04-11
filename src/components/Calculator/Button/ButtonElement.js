@@ -2,12 +2,7 @@ import React from 'react';
 import { bool, string, func } from 'prop-types';
 import { css } from 'react-emotion';
 
-export default function ButtonElement({
-  name,
-  onClick,
-  doubleHigh,
-  doubleWide
-}) {
+const ButtonElement = ({ name, onClick, doubleHigh, doubleWide }) => {
   const height = doubleHigh ? '125px' : '45px';
   const width = doubleWide ? '150px' : '60px';
 
@@ -29,7 +24,7 @@ export default function ButtonElement({
       {name}
     </button>
   );
-}
+};
 
 ButtonElement.propTypes = {
   name: string.isRequired,
@@ -42,3 +37,5 @@ ButtonElement.defaultProps = {
   doubleHigh: false,
   doubleWide: false
 };
+
+export default ButtonElement;

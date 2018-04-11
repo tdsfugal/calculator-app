@@ -6,6 +6,8 @@ import getApolloClient from './graphql/getApolloClient';
 
 import App from './app/App';
 
+import './services/calculate';
+
 ReactDOM.render(
   <ApolloProvider client={getApolloClient()}>
     <App />
