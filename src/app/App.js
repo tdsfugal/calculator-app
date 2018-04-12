@@ -34,10 +34,10 @@ const CalculatorHolder = styled('div')`
 export default function App() {
   return (
     <div className={appClass}>
-      <Header>Four Function Calculator</Header>
+      <Header>Four Function Calculators</Header>
       <CalculatorHolder>
-        <Calculator />
-        <Calculator />
+        <Calculator type="A" />
+        <Calculator type="B" />
       </CalculatorHolder>
     </div>
   );

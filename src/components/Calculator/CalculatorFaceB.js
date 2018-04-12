@@ -30,15 +30,15 @@ const RowGroup = styled('div')`
   label: row-group;
 `;
 
-const CalculatorFace = ({ id }) => (
+const CalculatorFaceB = ({ id }) => (
   <div className={calculatorClass}>
     <Display id={id} />
     <RowGroup>
       <ColumnGroup>
         <RowGroup>
-          <Button id={id} name="CE" />
           <Button id={id} name="C" />
           <Button id={id} name="+/-" />
+          <Button id={id} name="/" />
         </RowGroup>
         <RowGroup>
           <Button id={id} name="7" />
@@ -61,18 +61,17 @@ const CalculatorFace = ({ id }) => (
         </RowGroup>
       </ColumnGroup>
       <ColumnGroup>
-        <Button id={id} name="/" />
         <Button id={id} name="*" />
         <Button id={id} name="-" />
         <Button id={id} name="+" />
-        <Button id={id} name="=" />
+        <Button id={id} name="=" doubleHigh />
       </ColumnGroup>
     </RowGroup>
   </div>
 );
 
-CalculatorFace.propTypes = {
+CalculatorFaceB.propTypes = {
   id: string.isRequired
 };
 
-export default CalculatorFace;
+export default CalculatorFaceB;

@@ -19,46 +19,50 @@ export const DEFAULT_COMPUTATION_STATE = {
 
 const client = getApolloClient();
 
+const processEvents = computations => {
+  console.log('=============== Calculate =====================');
+  // Get the computations that need to be processed
+  const pending = computations.length
+    ? computations.filter(c => c && c.eventPending)
+    : [];
+  // Remove them from the list of priors while making a shallow copy
+  const priors = computations.reduce((acc, comp) => {
+    if (pending.indexOf(comp) < 0) acc.push(comp);
+    return acc;
+  }, []);
+  console.log(priors);
+  // process the pending computations
+  const processed = pending.map(
+    ({ id, eventKey, state = DEFAULT_COMPUTATION_STATE }) => {
+      const newState = calculate(eventKey, state);
+      return {
+        id,
+        eventKey: '',
+        eventPending: false,
+        state: newState,
+        __typename: 'Computation'
+      };
+    }
+  );
+  console.log(processed);
+  // Merge the old and the new
+  const newComps = priors.concat(processed);
+  console.log(newComps);
+  // Update the cache
+  client.writeQuery({
+    query: getComputations,
+    data: { computations: newComps }
+  });
+};
+
 const observable = client.watchQuery({
   query: getComputations,
-  pollInterval: 20000
+  pollInterval: 200000
 });
 
 const subscription = observable.subscribe({
   next: ({ data: { computations = [] } }) => {
-    console.log('=============== Calculate =====================');
-    // Get the computations that need to be processed
-    const pending = computations.length
-      ? computations.filter(c => c && c.eventPending)
-      : [];
-    // Remove them from the list of priors while making a shallow copy
-    const priors = computations.reduce((acc, comp) => {
-      if (pending.indexOf(comp) < 0) acc.push(comp);
-      return acc;
-    }, []);
-    console.log(priors);
-    // process the pending computations
-    const processed = pending.map(
-      ({ id, eventKey, state = DEFAULT_COMPUTATION_STATE }) => {
-        const newState = calculate(eventKey, state);
-        return {
-          id,
-          eventKey: '',
-          eventPending: false,
-          state: newState,
-          __typename: 'Computation'
-        };
-      }
-    );
-    console.log(processed);
-    // Merge the old and the new
-    const newComps = priors.concat(processed);
-    console.log(newComps);
-    // Update the cache
-    client.writeQuery({
-      query: getComputations,
-      data: { computations: newComps }
-    });
+    processEvents(computations);
   },
   error: err => {
     console.log(err);

@@ -3,7 +3,7 @@ import { bool, string, func } from 'prop-types';
 import { css } from 'react-emotion';
 
 const ButtonElement = ({ name, onClick, doubleHigh, doubleWide }) => {
-  const height = doubleHigh ? '125px' : '45px';
+  const height = doubleHigh ? '121px' : '45px';
   const width = doubleWide ? '150px' : '60px';
 
   const buttonClass = css`

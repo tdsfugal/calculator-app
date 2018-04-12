@@ -1,13 +1,14 @@
 import React from 'react';
 import { ApolloConsumer } from 'react-apollo';
 
-import CalculatorFace from './CalculatorFace';
+import CalculatorFaceA from './CalculatorFaceA';
+import CalculatorFaceB from './CalculatorFaceB';
 import { DEFAULT_COMPUTATION_STATE } from '../../services/calculate';
 import { getComputations } from '../../graphql/computation';
 
 let nextId = 0;
 
-export default function Calculator() {
+export default function Calculator({ type }) {
   // generate a unique id for this computation
   const id = `comp_${nextId}`;
   nextId += 1;
@@ -36,7 +37,14 @@ export default function Calculator() {
             data: { computations: newComps }
           });
         }
-        return <CalculatorFace id={id} />;
+        switch (type) {
+          case 'A':
+            return <CalculatorFaceA id={id} />;
+          case 'B':
+            return <CalculatorFaceB id={id} />;
+          default:
+            return null;
+        }
       }}
     </ApolloConsumer>
   );

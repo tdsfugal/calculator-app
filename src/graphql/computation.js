@@ -1,21 +1,7 @@
 import gql from 'graphql-tag';
 
 export const defaults = {
-  computations: [
-    {
-      id: 'comp_0',
-      eventKey: '',
-      eventPending: false,
-      state: {
-        displayString: '1234',
-        buffer: 1234,
-        accumulator: 0,
-        operator: 'none',
-        __typename: 'ComputationState'
-      },
-      __typename: 'Computation'
-    }
-  ]
+  computations: []
 };
 
 export const typeDefs = `
