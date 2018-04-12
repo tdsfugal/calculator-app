@@ -10,7 +10,7 @@ let client = null;
 export default function getApolloClient() {
   if (!client) {
     const cache = new InMemoryCache({
-      cacheResolvers: {
+      cacheRedirects: {
         Query: {
           computation: (_, args) =>
             toIdValue(
@@ -32,7 +32,8 @@ export default function getApolloClient() {
 
     client = new ApolloClient({
       link: stateLink,
-      cache
+      cache,
+      connectToDevTools: true
     });
   }
   return client;

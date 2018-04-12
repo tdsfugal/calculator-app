@@ -9,29 +9,32 @@ let nextId = 0;
 
 export default function Calculator() {
   // generate a unique id for this computation
-  const id = `calc_${nextId}`;
+  const id = `comp_${nextId}`;
   nextId += 1;
 
   return (
     <ApolloConsumer>
       {client => {
         // Initialze the computation in GraphQL, if needed
-        const { computations = [] } = client.readQuery({
+        const { computations } = client.readQuery({
           query: getComputations
         });
-        console.log(`>>>> Read ${id}`);
-        const compIds = computations.map(c => c.id);
+        const compIds = computations ? computations.map(c => c.id) : [];
         if (!compIds.includes(id)) {
-          computations.push({
+          const newComp = {
             id,
             eventKey: '',
             eventPending: false,
             state: Object.assign({}, DEFAULT_COMPUTATION_STATE),
             __typename: 'Computation'
-          });
-          const data = { computations };
+          };
+          const newComps = computations.concat([newComp]);
           console.log(`+++++++ INITIALIZING ${id} ++++++++`);
-          client.writeQuery({ query: getComputations, data });
+          console.log(newComps);
+          client.writeQuery({
+            query: getComputations,
+            data: { computations: newComps }
+          });
         }
         return <CalculatorFace id={id} />;
       }}

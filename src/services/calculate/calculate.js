@@ -20,19 +20,21 @@ const updateBuffer = (input = null, state) => {
     ? parseFloat(displayString)
     : parseInt(displayString, 10);
 
-  return Object.assign({}, ...state, {
-    buffer: state.bufferNegative ? newNumber * -1 : newNumber,
+  const buffer = state.bufferNegative ? newNumber * -1 : newNumber;
+
+  return Object.assign({}, state, {
+    buffer,
     displayString
   });
 };
 
 const toggleSign = state =>
-  Object.assign({}, ...state, {
+  Object.assign({}, state, {
     bufferNegative: !state.bufferNegative
   }).updateBuffer();
 
 const clearBuffer = state =>
-  Object.assign({}, ...state, {
+  Object.assign({}, state, {
     displayString: '',
     buffer: 0,
     bufferNegative: false
@@ -42,14 +44,14 @@ const clearAll = () => Object.assign({}, ...DEFAULT_COMPUTATION_STATE);
 
 const setOperator = (operator, state) =>
   operators.includes(operator)
-    ? Object.assign({}, ...state, {
+    ? Object.assign({}, state, {
         operator,
         accumulator: state.buffer
       }).clearBuffer()
     : state;
 
 const setBuffer = (number, state) =>
-  Object.assign({}, ...state, {
+  Object.assign({}, state, {
     buffer: number,
     displayString: number.toString()
   });

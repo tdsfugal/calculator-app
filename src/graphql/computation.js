@@ -1,7 +1,22 @@
 import gql from 'graphql-tag';
 
 export const defaults = {
-  computations: []
+  computations: [
+    {
+      id: 'comp_0',
+      eventKey: '',
+      eventPending: false,
+      state: {
+        displayString: '1234',
+        bufferNegative: false,
+        buffer: 1234,
+        accumulator: 0,
+        operator: 'none',
+        __typename: 'ComputationState'
+      },
+      __typename: 'Computation'
+    }
+  ]
 };
 
 export const typeDefs = `
@@ -70,20 +85,6 @@ export const eventFragment = gql`
 
 export const resolvers = {
   Mutation: {
-    updateState: (_, variables, { cache, getCacheKey }) => {
-      const id = getCacheKey({ __typename: 'Computation', id: variables.id });
-      const data = {
-        state: {
-          ...variables.state,
-          __typename: 'ComputationState'
-        },
-        __typename: 'Computation'
-      };
-      console.log(`$$$$$$ UPDATING STATE for ${id} $$$$$$$$$`);
-      cache.writeFragment({ id, fragment: stateFragment, data });
-      return null;
-    },
-
     registerKeyEvent: (_, variables, { cache, getCacheKey }) => {
       const id = getCacheKey({ __typename: 'Computation', id: variables.id });
       const data = {
@@ -95,18 +96,7 @@ export const resolvers = {
         `!!!!!!!! REGISTERING KEY EVENT :${variables.key}: for ${id} !!!!!!!!!!`
       );
       cache.writeFragment({ id, fragment: eventFragment, data });
-      return null;
-    },
-
-    clearKeyEvent: (_, variables, { cache, getCacheKey }) => {
-      const id = getCacheKey({ __typename: 'Computation', id: variables.id });
-      const data = {
-        eventKey: '',
-        eventPending: false,
-        __typename: 'Computation'
-      };
-      console.log(`^^^^^^^^^^ CLEARING KEY EVENT for ${id} ^^^^^^^^^^^^`);
-      cache.writeFragment({ id, fragment: eventFragment, data });
+      console.log(cache.readQuery({ query: getComputations }));
       return null;
     }
   }

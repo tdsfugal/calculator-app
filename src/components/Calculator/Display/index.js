@@ -24,8 +24,8 @@ const Result = styled('span')`
   font-size: 30px;
 `;
 
-const GET_BUFFER_STRING = gql`
-  query getBufferString @client {
+const GET_DISPLAY_STRING = gql`
+  query getDisplayString @client {
     computations {
       id
       state {
@@ -36,14 +36,14 @@ const GET_BUFFER_STRING = gql`
 `;
 
 const Display = ({ id }) => (
-  <Query query={GET_BUFFER_STRING}>
+  <Query query={GET_DISPLAY_STRING}>
     {({ loading, error, data }) => {
       // The filtering step should not be neccesary. There seems to be a bug in how
       // queries with arguments work in local cache. Not sure if it is a setup issue
       // or something deeper.
       const computations =
         !loading && !error && data && data.computations
-          ? data.computations
+          ? data.computations.slice(0)
           : [];
       const result = computations
         .filter(comp => comp && comp.id === id)

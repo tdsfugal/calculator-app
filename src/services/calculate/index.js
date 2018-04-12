@@ -22,28 +22,44 @@ const client = getApolloClient();
 
 const observable = client.watchQuery({
   query: getComputations,
-  pollInterval: 500
+  pollInterval: 20000
 });
 
 const subscription = observable.subscribe({
-  next: event2 => {
-    console.log('----Start----');
-    console.log(client);
-    console.log(client.cache.data.data.ROOT_QUERY);
-    const computations = event2.data.computations;
-    const pendingComputations = computations.length
-      ? computations.filter(c => c && c.event && c.event.pending)
+  next: ({ data: { computations = [] } }) => {
+    console.log('=============== Calculate =====================');
+    // Get the computations that need to be processed
+    const pending = computations.length
+      ? computations.filter(c => c && c.eventPending)
       : [];
-    console.log('--------');
-    pendingComputations.forEach(
-      ({ id, event, state = DEFAULT_COMPUTATION_STATE }) => {
-        console.log(`====== ${id} Pending =======`);
-        console.log(event);
-        console.log(state);
-        const newState = calculate(event.key, state);
-        console.log(newState);
+    // Remove them from the list of priors while making a shallow copy
+    const priors = computations.reduce((acc, comp) => {
+      if (pending.indexOf(comp) < 0) acc.push(comp);
+      return acc;
+    }, []);
+    console.log(priors);
+    // process the pending computations
+    const processed = pending.map(
+      ({ id, eventKey, state = DEFAULT_COMPUTATION_STATE }) => {
+        const newState = calculate(eventKey, state);
+        return {
+          id,
+          eventKey: '',
+          eventPending: false,
+          state: newState,
+          __typename: 'Computation'
+        };
       }
     );
+    console.log(processed);
+    // Merge the old and the new
+    const newComps = priors.concat(processed);
+    console.log(newComps);
+    // Update the cache
+    client.writeQuery({
+      query: getComputations,
+      data: { computations: newComps }
+    });
   },
   error: err => {
     console.log(err);
