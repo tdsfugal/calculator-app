@@ -20,7 +20,6 @@ export const DEFAULT_COMPUTATION_STATE = {
 const client = getApolloClient();
 
 const processEvents = computations => {
-  console.log('=============== Calculate =====================');
   // Get the computations that need to be processed
   const pending = computations.length
     ? computations.filter(c => c && c.eventPending)
@@ -30,7 +29,6 @@ const processEvents = computations => {
     if (pending.indexOf(comp) < 0) acc.push(comp);
     return acc;
   }, []);
-  console.log(priors);
   // process the pending computations
   const processed = pending.map(
     ({ id, eventKey, state = DEFAULT_COMPUTATION_STATE }) => {
@@ -44,10 +42,8 @@ const processEvents = computations => {
       };
     }
   );
-  console.log(processed);
   // Merge the old and the new
   const newComps = priors.concat(processed);
-  console.log(newComps);
   // Update the cache
   client.writeQuery({
     query: getComputations,

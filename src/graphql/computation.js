@@ -74,11 +74,7 @@ export const resolvers = {
         eventPending: true,
         __typename: 'Computation'
       };
-      console.log(
-        `!!!!!!!! REGISTERING KEY EVENT :${variables.key}: for ${id} !!!!!!!!!!`
-      );
       cache.writeFragment({ id, fragment: eventFragment, data });
-      console.log(cache.readQuery({ query: getComputations }));
       return null;
     }
   }

@@ -29,12 +29,9 @@ export default function Calculator({ type }) {
             state: Object.assign({}, DEFAULT_COMPUTATION_STATE),
             __typename: 'Computation'
           };
-          const newComps = computations.concat([newComp]);
-          console.log(`+++++++ INITIALIZING ${id} ++++++++`);
-          console.log(newComps);
           client.writeQuery({
             query: getComputations,
-            data: { computations: newComps }
+            data: { computations: computations.concat([newComp]) }
           });
         }
         switch (type) {
