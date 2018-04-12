@@ -15,7 +15,7 @@ Each face has a unique ID that is the primary key for a computation record store
 The compute engine observes all of the computation records with an observer. This observer is provided by
 the ApolloClient via a call to the _watchQuery_ factory method (**see known bugs!!**). Every time a button is "pressed" on a calculator face it updates two properties in the record - the button name goes in the _eventKey_ property and a flag _eventPending_ is set to true. This causes the cache to push an update to the compute engine which then processes the key event and updates the computation state. The calculator display observes the change in state and updates the text in the display window.
 
-The number of calculator faces that can be open simultaneously is arbitrarily large. Since there is only one cursor there is at best only one or two calculators at a time. The computation records are fairly small so there would be virtually no stress on the cache with even a few million records open at a time.
+The number of calculator faces that can be open simultaneously is arbitrarily large. Since there is only one cursor there are at best only one or two calculators active at a time. The computation records are fairly small so there would be virtually no stress on the cache with even a few million records open at a time.
 
 The computation service is fully stateless. Internally it is composed of pure functions that are composable. The current implementation is a simple four function calculator, but the architecture would support expansion to virtually any form of calculator via function composition.
 
