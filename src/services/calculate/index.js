@@ -11,7 +11,6 @@ export const DIVIDE = 'divide';
 
 export const DEFAULT_COMPUTATION_STATE = {
   displayString: '',
-  bufferNegative: false,
   buffer: 0,
   accumulator: 0,
   operator: NONE,

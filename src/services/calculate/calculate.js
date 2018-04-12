@@ -1,26 +1,48 @@
+/* eslint-disable prefer-destructuring */
 import {
   ADD,
   SUBTRACT,
   MULTIPLY,
   DIVIDE,
+  NONE,
   DEFAULT_COMPUTATION_STATE
 } from './index';
 
-const operators = [ADD, SUBTRACT, MULTIPLY, DIVIDE];
+const isFloat = numString => numString.indexOf('.') !== -1;
 
-const updateBuffer = (input = null, state) => {
-  const isFloat = state.displayString.indexOf('.') !== -1;
-  if (input === '.' && isFloat) return state; // No second decimal point
+const updateBuffer = (state, input) => {
+  let buffer;
+  let displayString;
 
-  const displayString = input
-    ? state.displayString.concat(input)
-    : state.displayString;
+  if (state.displayString === '0') {
+    displayString = input === '.' ? '0.0' : input;
+    buffer = parseInt(displayString, 10);
+  } else
+    switch (input) {
+      case '.':
+        // no double decimal points
+        if (isFloat(state.displayString)) return state;
+        displayString = state.displayString.concat('.0');
+        buffer = state.buffer;
+        break;
 
-  const newNumber = isFloat
-    ? parseFloat(displayString)
-    : parseInt(displayString, 10);
+      case '0':
+        // feels ok to just let the trailing zero stand
+        displayString = state.displayString.concat('0');
+        // numerically, ignore zeros to the right of the decimal point
+        buffer = isFloat(displayString) ? state.buffer : state.buffer * 10.0;
+        break;
 
-  const buffer = state.bufferNegative ? newNumber * -1 : newNumber;
+      default:
+        displayString =
+          state.displayString.length > 2 &&
+          state.displayString.length - 2 === state.displayString.indexOf('.0')
+            ? state.displayString.replace('.0', `.${input}`)
+            : state.displayString.concat(input);
+        buffer = isFloat(displayString)
+          ? parseFloat(displayString)
+          : parseInt(displayString, 10);
+    }
 
   return Object.assign({}, state, {
     buffer,
@@ -28,49 +50,58 @@ const updateBuffer = (input = null, state) => {
   });
 };
 
-const toggleSign = state =>
-  Object.assign({}, state, {
-    bufferNegative: !state.bufferNegative
-  }).updateBuffer();
+const toggleSign = state => {
+  const buffer = state.buffer * -1;
+  const displayString = buffer.toString();
+
+  return Object.assign({}, state, {
+    buffer,
+    displayString
+  });
+};
 
 const clearBuffer = state =>
   Object.assign({}, state, {
-    displayString: '',
-    buffer: 0,
-    bufferNegative: false
+    displayString: '0',
+    buffer: 0, 
   });
 
-const clearAll = () => Object.assign({}, ...DEFAULT_COMPUTATION_STATE);
+const clearAll = () => Object.assign({}, DEFAULT_COMPUTATION_STATE);
 
-const setOperator = (operator, state) =>
-  operators.includes(operator)
+const setOperator = (state, operator) =>
+  [ADD, SUBTRACT, MULTIPLY, DIVIDE].includes(operator)
     ? Object.assign({}, state, {
         operator,
-        accumulator: state.buffer
-      }).clearBuffer()
+        accumulator: state.buffer,
+        displayString: '0',
+        buffer: 0
+      })
     : state;
 
-const setBuffer = (number, state) =>
-  Object.assign({}, state, {
-    buffer: number,
-    displayString: number.toString()
-  });
-
 const compute = state => {
+  let buffer;
   switch (state.operator) {
     case ADD:
-      return setBuffer(state.accumulator + state.buffer);
+      buffer = state.accumulator + state.buffer;
+      break;
     case SUBTRACT:
-      return setBuffer(state.accumulator - state.buffer);
+      buffer = state.accumulator - state.buffer;
+      break;
     case MULTIPLY:
-      return setBuffer(state.accumulator * state.buffer);
-    case DIVIDE:
-      return state.buffer === 0
-        ? state // Silent return may not be the desired response to divide by zero
-        : setBuffer(state.accumulator / state.buffer);
+      buffer = state.accumulator * state.buffer;
+      break;
+    case DIVIDE: // Silent return may not be the desired response to divide by zero
+      buffer = state.buffer !== 0 ? state.accumulator / state.buffer : 0;
+      break;
     default:
       return state;
   }
+  return Object.assign({}, state, {
+    operator: NONE,
+    accumulator: 0,
+    buffer,
+    displayString: buffer.toString()
+  });
 };
 
 // This is a stateless four function calculator
@@ -81,37 +112,37 @@ export default function calculate(key, state) {
     case 'CE':
       return clearAll();
     case '0':
-      return updateBuffer('0', state);
+      return updateBuffer(state, '0');
     case '1':
-      return updateBuffer('1', state);
+      return updateBuffer(state, '1');
     case '2':
-      return updateBuffer('2', state);
+      return updateBuffer(state, '2');
     case '3':
-      return updateBuffer('3', state);
+      return updateBuffer(state, '3');
     case '4':
-      return updateBuffer('4', state);
+      return updateBuffer(state, '4');
     case '5':
-      return updateBuffer('5', state);
+      return updateBuffer(state, '5');
     case '6':
-      return updateBuffer('6', state);
+      return updateBuffer(state, '6');
     case '7':
-      return updateBuffer('7', state);
+      return updateBuffer(state, '7');
     case '8':
-      return updateBuffer('8', state);
+      return updateBuffer(state, '8');
     case '9':
-      return updateBuffer('9', state);
+      return updateBuffer(state, '9');
     case '.':
-      return updateBuffer('.', state);
+      return updateBuffer(state, '.');
     case '+/-':
       return toggleSign(state);
     case '+':
-      return setOperator(ADD, state);
+      return setOperator(state, ADD);
     case '-':
-      return setOperator(SUBTRACT, state);
+      return setOperator(state, SUBTRACT);
     case '*':
-      return setOperator(MULTIPLY, state);
+      return setOperator(state, MULTIPLY);
     case '/':
-      return setOperator(DIVIDE, state);
+      return setOperator(state, DIVIDE);
     case '=':
       return compute(state);
     default:

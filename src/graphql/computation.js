@@ -8,7 +8,6 @@ export const defaults = {
       eventPending: false,
       state: {
         displayString: '1234',
-        bufferNegative: false,
         buffer: 1234,
         accumulator: 0,
         operator: 'none',
@@ -23,7 +22,6 @@ export const typeDefs = `
 
   type ComputationState {
     displayString: String
-    bufferNegative: Boolean
     buffer: Number
     accumulator: Number
     operator: String
@@ -51,7 +49,6 @@ export const getComputations = gql`
       eventPending
       state {
         displayString
-        bufferNegative
         buffer
         accumulator
         operator
@@ -66,7 +63,6 @@ export const stateFragment = gql`
   fragment stateFragment on Computation @client {
     state {
       displayString
-      bufferNegative
       buffer
       accumulator
       operator
