@@ -8,27 +8,28 @@ Clone the repository and run _yarn install_. Start it with _yarn start_. It's a 
 
 ## Description
 
-One or more calculator faces run in a basic React render tree. They are simple user interfaces with no organic "smarts"; that is provided by a stateless javascript micro-service that has no direct connection with any of the calculator faces. The faces and compute engine communicate indirectly via the Apollo GraphQL client.
+The architecture consists of a View layer in React, a Model layer in GraphQL (with inMemoryCache for local storage), and a micro-service layer in Vanilla Javascript for business logic.
 
-Each face has a unique ID that is the primary key for a computation record stored in the ApolloClient in-memory cache. The cache is loaded with a default computation when the Calculator component loads. Each button and display element interacts with this record independently to avoid entangling the operation of the calculators with their render tree. The only setup information required via props is the ID of the computation record in the cache.
+The View layer consists of a page with a header and one or more calculator faces. These faces are pure View - they are stateless representations of data in the model layer. Each face has a unique ID that is the primary key for a record in the GraphQL cache. This record contains the complete state of the computation, including any pending operations. Clicking on a button posts the operation associated with the button to the calculation state record.
 
-The compute engine observes all of the computation records with an observer. This observer is provided by
-the ApolloClient via a call to the _watchQuery_ factory method (**see known bugs!!**). Every time a button is "pressed" on a calculator face it updates two properties in the record - the button name goes in the _eventKey_ property and a flag _eventPending_ is set to true. This causes the cache to push an update to the compute engine which then processes the key event and updates the computation state. The calculator display observes the change in state and updates the text in the display window.
+The compute service in the Vanilla Javascript layer watches the GraphQL cache for changes in the computation states. This observer is provided by the ApolloClient via a call to the _watchQuery_ factory method. The service processes each changed record to update the computation state and clear the key-click event.
 
+<<<<<<< HEAD
 The number of calculator faces that can be open simultaneously is arbitrarily large. Since there is only one cursor there are at best only one or two calculators active at a time. The computation records are fairly small so there would be virtually no stress on the cache with even a few million records open at a time.
+=======
+The calculator display component in the calculator face is wrapped in a Query component that watches for changes in the display string property of the calculation state. On change it passes the new string to the display's view component for presentation. This one-way flow of information creates a very stable user experience.
+>>>>>>> 528ab98... Fixed polling bug. Edited ReadMe.md
 
-The computation service is fully stateless. Internally it is composed of pure functions that are composable. The current implementation is a simple four function calculator, but the architecture would support expansion to virtually any form of calculator via function composition.
+The View layer is built for extreme modularity. There is virtually no information passed via props. The buttons and display elements are told which calculation ID to participate in, but that's about it. Currently the calculator types use hard-coded layouts, but the architecture is set up for easy migration to a soft-settable UI via configuration objects. Two calculator faces are shown to illustrate this property.
 
-The display configuration is extremely flexible. Buttons can be re-arranged on a whim with few seconds of cut-and-paste in the editor. The styling is also very easy to modify; all styling is done with a CSS-in-JS styled component package _emotion_.
+Computationally, there is no issue with an arbitrary number of calculators on the screen. There is only one cursor, so at most there are only a hand full of calculators active at any one time. Even a weak computer would be able to keep up. The computation state is also a fairly small record, so memory is not likely to be an issue. The number of calculator faces that can be open simultaneously is therefore arbitrarily large.
 
-## Known Issues
-
-This setup has a rather major bug. The observer that the compute engine uses to watch the computations is designed to poll a server periodically for updates. When it does, the first thing it apparently does is wipe out the cache and re-instantiate it with default values. This wipes out all the computation records and lobotomizes the calculators.
-
-This would be almost acceptable if the calculator faces were set up to recover from this loss, but they are _currently_ not set up to do this. The cache records are created by the faces when they are instantiated, so the only way to get the page working again is to reload it.
-
-For this reason the pollInterval for the observer is set to 200,000 ms - long enough for demonstration purposes but certainly not acceptable for even an alpha release. The right solution is to build an observation process for the compute engine that doesn't reset the cache.
+The computation service is fully stateless. There is one observant external interface that operates a set of composable pure functions to resolve pending operations. The current implementation is a simple four function calculator, but the architecture would support expansion to virtually any form of calculator via function composition.
 
 ## Future directions
 
-It might be fun to implement drag-n-drop in all the components to allow people to assemble their own custom calculators in the browser.
+1.  Drag-n-drop calculator assembly - The user will be able to create a customized calculator by pulling elements from a pallet.
+2.  Increase computational complexity - Additional composable pure-functions (e.g. sin, cos, 1/x) will be added to the calculator.
+3.  Reverse Polish notation - Adding a RPN option requires a stack to the computation state, and ENTER key, and slight modifications to the behavior of the operator buttons that can be triggered with a flag in the computation state.
+4.  "Skins" - The current gray-n-black look is my favorite, but kids might like something flashier.
+5.  Static file serving - The app has no permanent state and does not require a server, so a static HTML file is just fine.

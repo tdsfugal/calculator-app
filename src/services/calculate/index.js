@@ -53,9 +53,10 @@ const processEvents = computations => {
 
 const observable = client.watchQuery({
   query: getComputations,
-  pollInterval: 200000
+  fetchPolicy: 'cache-only'
 });
 
+/* eslint-disable no-console */
 const subscription = observable.subscribe({
   next: ({ data: { computations = [] } }) => {
     processEvents(computations);
