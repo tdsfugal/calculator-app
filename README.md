@@ -14,11 +14,7 @@ The View layer consists of a page with a header and one or more calculator faces
 
 The compute service in the Vanilla Javascript layer watches the GraphQL cache for changes in the computation states. This observer is provided by the ApolloClient via a call to the _watchQuery_ factory method. The service processes each changed record to update the computation state and clear the key-click event.
 
-<<<<<<< HEAD
-The number of calculator faces that can be open simultaneously is arbitrarily large. Since there is only one cursor there are at best only one or two calculators active at a time. The computation records are fairly small so there would be virtually no stress on the cache with even a few million records open at a time.
-=======
 The calculator display component in the calculator face is wrapped in a Query component that watches for changes in the display string property of the calculation state. On change it passes the new string to the display's view component for presentation. This one-way flow of information creates a very stable user experience.
->>>>>>> 528ab98... Fixed polling bug. Edited ReadMe.md
 
 The View layer is built for extreme modularity. There is virtually no information passed via props. The buttons and display elements are told which calculation ID to participate in, but that's about it. Currently the calculator types use hard-coded layouts, but the architecture is set up for easy migration to a soft-settable UI via configuration objects. Two calculator faces are shown to illustrate this property.
 
