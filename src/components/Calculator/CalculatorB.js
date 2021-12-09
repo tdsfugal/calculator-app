@@ -1,37 +1,12 @@
 import React from 'react';
-import styled, { css } from 'react-emotion';
 import { string } from 'prop-types';
 
-import Display from './Display';
-import Button from './Button';
+import Display from '../Display';
+import Button from '../Button';
+import { Face, ColumnGroup, RowGroup } from '../Face';
 
-const calculatorClass = css`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  width: 400px;
-  margin: 50px;
-  background-color: #789;
-  border: solid 2px #666;
-  label: calculator;
-`;
-
-const ColumnGroup = styled('div')`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  label: column-group;
-`;
-
-const RowGroup = styled('div')`
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  label: row-group;
-`;
-
-const CalculatorFaceB = ({ id }) => (
-  <div className={calculatorClass}>
+const CalculatorB = ({ id }) => (
+  <Face>
     <Display id={id} />
     <RowGroup>
       <ColumnGroup>
@@ -67,11 +42,11 @@ const CalculatorFaceB = ({ id }) => (
         <Button id={id} name="=" doubleHigh />
       </ColumnGroup>
     </RowGroup>
-  </div>
+  </Face>
 );
 
-CalculatorFaceB.propTypes = {
+CalculatorB.propTypes = {
   id: string.isRequired
 };
 
-export default CalculatorFaceB;
+export default CalculatorB;

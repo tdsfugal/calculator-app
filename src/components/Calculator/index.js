@@ -1,15 +1,15 @@
 import React from 'react';
 import { ApolloConsumer } from 'react-apollo';
+import { string } from 'prop-types';
 
-import CalculatorFaceA from './CalculatorFaceA';
-import CalculatorFaceB from './CalculatorFaceB';
+import CalculatorA from './CalculatorA';
+import CalculatorB from './CalculatorB';
 import { DEFAULT_COMPUTATION_STATE } from '../../services/calculate';
 import { getComputations } from '../../graphql/computation';
 
 let nextId = 0;
 
 export default function Calculator({ type }) {
-  // generate a unique id for this computation
   const id = `comp_${nextId}`;
   nextId += 1;
 
@@ -36,9 +36,9 @@ export default function Calculator({ type }) {
         }
         switch (type) {
           case 'A':
-            return <CalculatorFaceA id={id} />;
+            return <CalculatorA id={id} />;
           case 'B':
-            return <CalculatorFaceB id={id} />;
+            return <CalculatorB id={id} />;
           default:
             return null;
         }
@@ -46,3 +46,7 @@ export default function Calculator({ type }) {
     </ApolloConsumer>
   );
 }
+
+Calculator.propTypes = {
+  type: string.isRequired
+};
